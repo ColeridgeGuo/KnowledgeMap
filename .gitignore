@@ -6,6 +6,7 @@
 
 # data
 pubmed_result2018_abstract(1).txt
+cleaned_texts.txt
 
 # StanfordCoreNLP
 stanford-corenlp-full-2018-10-05
