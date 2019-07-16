@@ -1,0 +1,11 @@
+# .DS_Store
+.DS_Store
+
+# .idea package info
+.idea/
+
+# data
+pubmed_result2018_abstract(1).txt
+
+# StanfordCoreNLP
+stanford-corenlp-full-2018-10-05
