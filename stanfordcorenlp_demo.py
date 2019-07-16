@@ -1,23 +1,21 @@
 # Simple usage
 from stanfordcorenlp import StanfordCoreNLP as NLP
 
-props = {'annotators': 'tokenize,ssplit,pos',
-         'pipelineLanguage': 'en',
-         'outputFormat': 'json'}
-
 nlp = NLP(r'stanford-corenlp-full-2018-10-05',
           memory='4g')
 
-sentence = 'GDUFS is active in a full range of international cooperation and exchanges in education.'
-print()
-print('Tokenize:', nlp.word_tokenize(sentence))
-print()
-print('Part of Speech:', nlp.pos_tag(sentence))
-print()
-print('Named Entities:', nlp.ner(sentence))
-print()
-print('Constituency Parsing:\n', nlp.parse(sentence))
-print()
-print('Dependency Parsing:', nlp.dependency_parse(sentence))
+document = """The prospects for Britain’s orderly withdrawal from the European
+Union on March 29 have receded further, even as MPs rallied to stop a no-deal
+scenario. An amendment to the draft bill on the termination of London’s
+membership of the bloc obliges Prime Minister Theresa May to renegotiate her
+withdrawal agreement with Brussels. A Tory backbencher’s proposal calls on the
+government to come up with alternatives to the Irish backstop, a central tenet
+of the deal Britain agreed with the rest of the EU."""
+
+props = {'annotators': 'tokenize,ssplit,pos,ner',
+         'pipelineLanguage': 'en',
+         'outputFormat': 'text'}
+
+print(nlp.annotate(document, properties=props))
 
 nlp.close()
