@@ -35,7 +35,7 @@ discussed how the current phenotypic methods should be used in combination with
 the genotypic methods for rapid antituberculosis susceptibility testing.""")
 
 # write dependencies to a file
-with open("../output/dependencies.txt", 'w+') as outfile:
+with open("output/dependencies.txt", 'w+') as outfile:
     for sentence in doc.sentences:
         
         # print dependencies to the file
