@@ -55,10 +55,10 @@ def extract_abstracts(filename: str) -> List[str]:
 
 
 if __name__ == '__main__':
-    useful_info = extract_abstracts("pubmed_result2018_abstract(1).txt")
+    useful_info = extract_abstracts("../data/pubmed_result2018_abstract(1).txt")
     print(len(useful_info))
     
-    with open('cleaned_texts.txt', 'w+') as outfile:
+    with open('../output/cleaned_texts.txt', 'w+') as outfile:
         for info in useful_info:
             outfile.write(info)
             outfile.write('\n')
