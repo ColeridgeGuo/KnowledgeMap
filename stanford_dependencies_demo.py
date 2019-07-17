@@ -1,7 +1,7 @@
 import stanfordnlp
 from typing import TextIO
 
-# Simple demo of StanfordNLP Python package
+# initialize stanfordnlp pipeline
 nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
                            use_gpu=True)
 
@@ -39,18 +39,23 @@ def extract_sentence_core(text: str, full: TextIO, core: TextIO):
     print('-'*50, file=full, flush=True)  # separates each file
     print(file=core, flush=True)  # separates each file
     
-
-with open("data/cleaned_texts.txt", 'r') as document, \
-        open("output/full_dependencies.txt", 'w+') as full_file, \
-        open("output/sentence_cores.txt", 'w+') as core_file:
     
-    paragraph = ""
-    i = 1
-    for line in document:
-        if line == '\n':
-            i += 1
-            print(f"Processing file {i}", flush=True)
-            extract_sentence_core(paragraph, full_file, core_file)
-            paragraph = ""
-        else:
-            paragraph += line
+if __name__ == '__main__':
+    
+    # cleaned_texts.txt       - all abstracts
+    # sentence_cores.txt      - sentence cores
+    # full_dependencies.txt   - detailed dependencies of each sentence
+    with open("data/cleaned_texts.txt", 'r') as document, \
+            open("output/full_dependencies.txt", 'w+') as full_file, \
+            open("output/sentence_cores.txt", 'w+') as core_file:
+        
+        paragraph = ""
+        i = 1
+        for line in document:
+            if line == '\n':
+                i += 1
+                print(f"Processing file {i}", flush=True)
+                extract_sentence_core(paragraph, full_file, core_file)
+                paragraph = ""
+            else:
+                paragraph += line
