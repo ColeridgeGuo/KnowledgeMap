@@ -1,43 +1,56 @@
 import stanfordnlp
+from typing import TextIO
 
 # Simple demo of StanfordNLP Python package
 nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
                            use_gpu=True)
 
-doc = nlp("""
-Tuberculosis, disease caused by Mycobacterium tuberculosis, is currently the
-leading cause of death by a single infectious agent worldwide. Early, rapid and
-accurate identification of M. tuberculosis and the determination of drug
-susceptibility is essential for the treatment and management of this disease.
-Tuberculosis diagnosis is mainly based on chest radiography, smear microscopy and
-bacteriological culture. Smear microscopy has variable sensitivity, mainly in
-patients co-infected with the human immunodeficiency virus (HIV). Conventional
-culture for M. tuberculosis isolation, identification and drug susceptibility
-testing requires several weeks owning to the slow growth of M. tuberculosis. The
-delay in the time to results drives the prolongation of potentially inappropriate
-antituberculosis therapy contributing to the emergence of drug resistance,
-reducing treatment options and increasing treatment duration and associated
-costs, resulting in increased mortality and morbidity. For these reasons, novel
-diagnostic methods are need for timely identification of M. tuberculosis and
-determination of the antibiotic susceptibility profile of the infecting strain.
-Molecular methods offer enhanced sensitivity and specificity, early detection and
-the capacity to detect mixed infections. These technologies have improved
-turnaround time, cost effectiveness and are amenable for point-of-care testing.
-However, although these methods produce results within hours from sample
-collection, the phenotypic susceptibility testing is still needed for the
-determination of drug susceptibility and quantify the susceptibility levels of a
-given strain towards individual antibiotics. This review presents the history,
-advances and forthcoming promises in the molecular diagnosis of tuberculosis. An
-overview on the general principles, diagnostic value and the main advantages and
-disadvantages of the molecular methods used for the detection and identification
-of M. tuberculosis and its associated disease, is provided. It will be also
-discussed how the current phenotypic methods should be used in combination with
-the genotypic methods for rapid antituberculosis susceptibility testing.""")
+noncore_relations = {'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod',
+                     'nmod', 'appos', 'acl', 'amod', 'cc', 'conj', 'case',
+                     'det', 'flat', 'nmod:poss', 'punct', 'mark', 'compound'
+                     }
 
-# write dependencies to a file
-with open("output/dependencies.txt", 'w+') as outfile:
+
+def extract_sentence_core(text: str, full: TextIO, core: TextIO):
+    """ extracts the dependencies of text, writes them to a file,
+        and writes the sentence core to anothe file.
+    """
+    
+    doc = nlp(text)
     for sentence in doc.sentences:
+    
+        reduced = []
+        # process the dependency of each token
+        for dep in sentence.dependencies:
+            
+            token = dep[2].text
+            relation = dep[1]
+            
+            if relation not in noncore_relations:
+                reduced.append(token)
+    
+        # print dependencies to a file
+        sentence.print_dependencies(file=full)
+        print(file=full, flush=True)  # separates each sentence
+    
+        # print the sentence core to a file
+        print(' '.join(reduced) + '.', file=core, flush=True)
         
-        # print dependencies to the file
-        sentence.print_dependencies(file=outfile)
-        print(file=outfile)  # print a line to separate each sentence
+    print('-'*50, file=full, flush=True)  # separates each file
+    print(file=core, flush=True)  # separates each file
+    
+
+with open("data/cleaned_texts.txt", 'r') as document, \
+        open("output/full_dependencies.txt", 'w+') as full_file, \
+        open("output/sentence_cores.txt", 'w+') as core_file:
+    
+    paragraph = ""
+    i = 1
+    for line in document:
+        if line == '\n':
+            i += 1
+            print(f"Processing file {i}", flush=True)
+            extract_sentence_core(paragraph, full_file, core_file)
+            paragraph = ""
+        else:
+            paragraph += line
