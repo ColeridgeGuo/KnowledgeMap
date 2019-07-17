@@ -58,7 +58,8 @@ if __name__ == '__main__':
     useful_info = extract_abstracts("data/pubmed_result2018_abstract(1).txt")
     print(len(useful_info))
     
-    with open('output/cleaned_texts.txt', 'w+') as outfile:
+    # write to a new file
+    with open('data/cleaned_texts.txt', 'w+') as outfile:
         for info in useful_info:
             outfile.write(info)
             outfile.write('\n')
