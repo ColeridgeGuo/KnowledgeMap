@@ -36,7 +36,7 @@ def extract_sentence_core(text: str, full: TextIO, core: TextIO):
         # print the sentence core to a file
         print(' '.join(reduced) + '.', file=core, flush=True)
         
-    print('-'*50, file=full, flush=True)  # separates each file
+    print('-', file=full, flush=True)  # separates each file
     print(file=core, flush=True)  # separates each file
     
     
@@ -53,8 +53,8 @@ if __name__ == '__main__':
         i = 1
         for line in document:
             if line == '\n':
-                i += 1
                 print(f"Processing file {i}", flush=True)
+                i += 1
                 extract_sentence_core(paragraph, full_file, core_file)
                 paragraph = ""
             else:
