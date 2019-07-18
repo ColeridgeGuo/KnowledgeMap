@@ -1,5 +1,6 @@
 import stanfordnlp
 from typing import TextIO
+import re
 
 # initialize stanfordnlp pipeline
 nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
@@ -51,11 +52,21 @@ if __name__ == '__main__':
         
         paragraph = ""
         i = 1
+        
+        # pattern matching "molecular diagnosis"
+        mlc_dig_pt = re.compile(r'[m|M]olecular.*?\n*?[d|D]iagnosis')
+        
         for line in document:
+                
             if line == '\n':
-                print(f"Processing file {i}", flush=True)
+                print(f"Processing file {i}")
+                
+                # extract sentence core only if it entails molecular diagnosis
+                if mlc_dig_pt.search(paragraph):
+                    print(f"File {i} entails molecular diagnosis.")
+                    extract_sentence_core(paragraph, full_file, core_file)
+                    
                 i += 1
-                extract_sentence_core(paragraph, full_file, core_file)
-                paragraph = ""
+                paragraph = ""  # reset paragraph
             else:
                 paragraph += line
