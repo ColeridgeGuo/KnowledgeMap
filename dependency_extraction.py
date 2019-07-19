@@ -12,7 +12,7 @@ noncore_relations = {'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod',
                      }
 
 
-def extract_sentence_core(text: str, full: TextIO, core: TextIO):
+def extract_sentence_core(text: str, full: TextIO = None, core: TextIO = None):
     """ extracts the dependencies of text, writes them to a file,
         and writes the sentence core to anothe file.
     """
@@ -26,6 +26,12 @@ def extract_sentence_core(text: str, full: TextIO, core: TextIO):
             
             token = dep[2].text
             relation = dep[1]
+            tok_index = dep[2].index
+            governor = dep[0].text
+            gov_index = dep[0].index
+            
+            print(f"{token} ({tok_index}): "
+                  f"{relation} to {governor} ({gov_index})")
             
             if relation not in noncore_relations:
                 reduced.append(token)
@@ -54,12 +60,13 @@ if __name__ == '__main__':
         i = 1
         
         for line in document:
-                
+            
             if line == '\n':
                 print(f"Processing file {i}")
                 extract_sentence_core(paragraph, full_file, core_file)
                 
                 i += 1
                 paragraph = ""  # reset paragraph
+                
             else:
                 paragraph += line
