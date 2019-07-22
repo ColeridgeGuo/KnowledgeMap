@@ -1,5 +1,6 @@
 import re
 from typing import List
+import glob
 
 
 def is_abstract(paragraph: List[str]) -> bool:
@@ -49,7 +50,6 @@ def extract_abstracts(filename: str) -> List[str]:
                     
                     chunk = ''.join(chunk)  # join strings to form a paragraph
                     abstracts.append(chunk)  # add it to abstracts
-                    print(chunk)
                     
                 chunk = []  # reset chunk
 
@@ -60,11 +60,19 @@ def extract_abstracts(filename: str) -> List[str]:
 
 
 if __name__ == '__main__':
-    abstracts = extract_abstracts("data/pubmed_result2018_abstract(1).txt")
-    print(len(abstracts))
     
-    # write to a new file
-    with open('data/cleaned_texts.txt', 'w+') as outfile:
-        for info in abstracts:
-            outfile.write(info)
-            outfile.write('\n')
+    # list of all text files containing abstracts
+    file_list = glob.glob('data/original texts/*.txt')
+    
+    for file in file_list:
+        
+        year = re.search(r'\d{4}', file)[0]  # year of the articles
+        # cleaned abstracts
+        abstract_list = extract_abstracts(file)
+        print(len(abstract_list))
+        
+        # write to a new file
+        with open(f'data/cleaned texts/cleaned_texts_{year}.txt', 'w+') as outfile:
+            for line in abstract_list:
+                outfile.write(line)
+                outfile.write('\n')
