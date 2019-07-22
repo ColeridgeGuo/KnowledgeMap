@@ -1,6 +1,7 @@
 import stanfordnlp
-from typing import TextIO
+from typing import List
 from collections import namedtuple
+import glob
 import re
 
 # initialize stanfordnlp pipeline
@@ -8,7 +9,7 @@ nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
                            use_gpu=True)
 
 
-def extract_sentence_core(text: str):
+def extract_sentence_core(text: str) -> List[str]:
     """ extract sentence cores for further relation extractions """
     
     doc = nlp(text)
@@ -46,26 +47,33 @@ def extract_sentence_core(text: str):
     
 if __name__ == '__main__':
     
-    sentence_cores = []
+    # list of all text files containing abstracts
+    file_list = glob.glob('data/cleaned texts/*.txt')
     
-    # cleaned_texts.txt     - all abstracts
-    # sentence_cores.txt    - sentence cores
-    with open("data/cleaned_texts.txt", 'r') as document, \
-            open("output/sentence_cores.txt", 'w+') as core_file:
+    for file in file_list:
+        year = re.search(r'\d{4}', file)[0]  # year of the articles
+        sentence_cores = []
         
-        paragraph = ""
-        i = 1
-        
-        for line in document:
+        print(f"Processing {year} files:")
+        # cleaned_texts_<year>.txt     - all abstracts for the given year
+        # sentence_cores_<year>.txt    - sentence cores for the given year
+        with open(file, 'r') as document, \
+                open(f"output/sentence_cores_{year}.txt", 'w+') as core_file:
+            
+            paragraph = ""
+            i = 1
+            
+            for line in document:
                 
-            if line == '\n':
-                print(f"Processing file {i} \n")
-                sentence_cores.extend(extract_sentence_core(paragraph))
-                
-                i += 1
-                paragraph = ""  # reset paragraph
-            else:
-                paragraph += line
-        
-        for core in sentence_cores:
-            core_file.write(core)
+                if line == '\n':
+                    print(f"    Processing file {i}")
+                    sentence_cores.extend(extract_sentence_core(paragraph))
+                    
+                    i += 1
+                    paragraph = ""  # reset paragraph
+                else:
+                    paragraph += line
+            
+            for core in sentence_cores:
+                core_file.write(core)
+
