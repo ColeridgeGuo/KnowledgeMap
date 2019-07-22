@@ -7,16 +7,9 @@ import re
 nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
                            use_gpu=True)
 
-noncore_relations = {'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod',
-                     'nmod', 'appos', 'acl', 'amod', 'cc', 'conj', 'case',
-                     'det', 'flat', 'nmod:poss', 'punct', 'mark', 'compound'
-                     }
-
 
 def extract_sentence_core(text: str, core: TextIO = None):
-    """ extracts the dependencies of text, writes them to a file,
-        and writes the sentence core to anothe file.
-    """
+    """ extract sentence cores for further relation extractions """
     
     doc = nlp(text)
     # namedtuple container for Word object
@@ -52,8 +45,8 @@ def extract_sentence_core(text: str, core: TextIO = None):
     
 if __name__ == '__main__':
     
-    # cleaned_texts.txt       - all abstracts
-    # sentence_cores.txt      - sentence cores
+    # cleaned_texts.txt     - all abstracts
+    # sentence_cores.txt    - sentence cores
     with open("data/cleaned_texts.txt", 'r') as document, \
             open("output/sentence_cores.txt", 'w+') as core_file:
         

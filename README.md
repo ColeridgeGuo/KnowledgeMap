@@ -5,10 +5,11 @@ Creating knowledge maps using StanfordCoreNLP
 Process the list of articles to remove unuseful info, leave only abstracts and
 some titles for entity-relation extraction.
 
-## stanford_dependencies_demo.py
-A demo for dependency parsing using official `stanfordnlp` package.
+## relation_extraction.py
+extract sentence cores as relations for building a knowledge base.
 
 ## stanford_ner_demo.py
+
 A demo for Named-Entity Recognition parsing using `StanfordNERTagger` in the 
 `nltk` package.
 
