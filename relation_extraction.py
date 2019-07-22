@@ -8,12 +8,13 @@ nlp = stanfordnlp.Pipeline(processors='tokenize,pos,depparse',
                            use_gpu=True)
 
 
-def extract_sentence_core(text: str, core: TextIO = None):
+def extract_sentence_core(text: str):
     """ extract sentence cores for further relation extractions """
     
     doc = nlp(text)
     # namedtuple container for Word object
     Word = namedtuple('Word', 'text, index, governor, gov_index, relation')
+    reduced_sentences = []
     
     for sentence in doc.sentences:
     
@@ -38,12 +39,14 @@ def extract_sentence_core(text: str, core: TextIO = None):
                 reduced.append(word.text)
     
         # print the sentence core to a file
-        print(' '.join(reduced) + '.', file=core, flush=True)
-        
-    print(file=core, flush=True)  # separates each file
+        reduced_sentences.append(' '.join(reduced) + '.\n')
+    reduced_sentences.append('\n')
+    return reduced_sentences
     
     
 if __name__ == '__main__':
+    
+    sentence_cores = []
     
     # cleaned_texts.txt     - all abstracts
     # sentence_cores.txt    - sentence cores
@@ -57,9 +60,12 @@ if __name__ == '__main__':
                 
             if line == '\n':
                 print(f"Processing file {i} \n")
-                extract_sentence_core(paragraph, core_file)
+                sentence_cores.extend(extract_sentence_core(paragraph))
                 
                 i += 1
                 paragraph = ""  # reset paragraph
             else:
                 paragraph += line
+        
+        for core in sentence_cores:
+            core_file.write(core)
