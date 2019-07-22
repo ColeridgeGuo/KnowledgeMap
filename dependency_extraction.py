@@ -1,5 +1,6 @@
 import stanfordnlp
 from typing import TextIO
+from collections import namedtuple
 import re
 
 # initialize stanfordnlp pipeline
@@ -12,38 +13,40 @@ noncore_relations = {'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod',
                      }
 
 
-def extract_sentence_core(text: str, full: TextIO = None, core: TextIO = None):
+def extract_sentence_core(text: str, core: TextIO = None):
     """ extracts the dependencies of text, writes them to a file,
         and writes the sentence core to anothe file.
     """
     
     doc = nlp(text)
+    # namedtuple container for Word object
+    Word = namedtuple('Word', 'text, index, governor, gov_index, relation')
+    
     for sentence in doc.sentences:
     
-        reduced = []
+        words = []
+        root = 0
         # process the dependency of each token
         for dep in sentence.dependencies:
             
-            token = dep[2].text
-            relation = dep[1]
-            tok_index = dep[2].index
-            governor = dep[0].text
-            gov_index = dep[0].index
+            # specify what the root is
+            if dep[1] == 'root':
+                root = dep[2].index
             
-            print(f"{token} ({tok_index}): "
-                  f"{relation} to {governor} ({gov_index})")
+            word = Word(dep[2].text, dep[2].index, dep[0].text, dep[0].index,
+                        dep[1])
+            words.append(word)
             
-            if relation not in noncore_relations:
-                reduced.append(token)
-    
-        # print dependencies to a file
-        sentence.print_dependencies(file=full)
-        print(file=full, flush=True)  # separates each sentence
+        # extract words that depend on root
+        reduced = []
+        for word in words:
+            if (word.gov_index == root and word.relation != 'punct') or \
+                    (word.relation == 'root'):
+                reduced.append(word.text)
     
         # print the sentence core to a file
         print(' '.join(reduced) + '.', file=core, flush=True)
         
-    print('-', file=full, flush=True)  # separates each file
     print(file=core, flush=True)  # separates each file
     
     
@@ -51,22 +54,19 @@ if __name__ == '__main__':
     
     # cleaned_texts.txt       - all abstracts
     # sentence_cores.txt      - sentence cores
-    # full_dependencies.txt   - detailed dependencies of each sentence
     with open("data/cleaned_texts.txt", 'r') as document, \
-            open("output/full_dependencies.txt", 'w+') as full_file, \
             open("output/sentence_cores.txt", 'w+') as core_file:
         
         paragraph = ""
         i = 1
         
         for line in document:
-            
+                
             if line == '\n':
-                print(f"Processing file {i}")
-                extract_sentence_core(paragraph, full_file, core_file)
+                print(f"Processing file {i} \n")
+                extract_sentence_core(paragraph, core_file)
                 
                 i += 1
                 paragraph = ""  # reset paragraph
-                
             else:
                 paragraph += line
