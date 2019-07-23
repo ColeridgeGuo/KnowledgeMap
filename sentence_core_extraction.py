@@ -45,38 +45,40 @@ def extract_sentence_core(text: str) -> List[str]:
     return reduced_sentences
     
     
+def extract_file(filename: str) -> List[str]:
+    cores = []
+    
+    with open(filename, 'r') as document:
+        paragraph = ""
+        i = 1
+
+        # process each line
+        for line in document:
+    
+            # if at the end of a paragraph
+            if line == '\n':
+                print(f"    Processing file {i}")
+                cores.extend(extract_sentence_core(paragraph))
+        
+                i += 1
+                paragraph = ""  # reset paragraph
+            else:
+                paragraph += line  # append line to paragraph
+                
+    return cores
+    
+    
 if __name__ == '__main__':
     
     # list of all text files containing abstracts
     file_list = glob.glob('data/cleaned texts/*.txt')
     
     for file in file_list:
-        year = re.search(r'\d{4}', file)[0]  # year of the articles
-        sentence_cores = []
-        
+        year = re.search(r'\d{4}', file)[0]
         print(f"Processing {year} files:")
-        # cleaned_texts_<year>.txt     - all abstracts for the given year
-        # sentence_cores_<year>.txt    - sentence cores for the given year
-        with open(file, 'r') as document, \
-                open(f"output/sentence_cores_{year}.txt", 'w+') as core_file:
-            
-            paragraph = ""
-            i = 1
-            
-            # process each line
-            for line in document:
-                
-                # if at the end of a paragraph
-                if line == '\n':
-                    print(f"    Processing file {i}")
-                    sentence_cores.extend(extract_sentence_core(paragraph))
-                    
-                    i += 1
-                    paragraph = ""  # reset paragraph
-                else:
-                    paragraph += line  # append line to paragraph
-            
-            # write sentence cores to a file
+        sentence_cores = extract_file(file)
+
+        # write sentence cores to a file
+        with open(f"output/sentence_cores_{year}.txt", 'w+') as core_file:
             for core in sentence_cores:
                 core_file.write(core)
-
