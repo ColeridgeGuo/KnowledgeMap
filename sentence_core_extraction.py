@@ -63,8 +63,10 @@ if __name__ == '__main__':
             paragraph = ""
             i = 1
             
+            # process each line
             for line in document:
                 
+                # if at the end of a paragraph
                 if line == '\n':
                     print(f"    Processing file {i}")
                     sentence_cores.extend(extract_sentence_core(paragraph))
@@ -72,8 +74,9 @@ if __name__ == '__main__':
                     i += 1
                     paragraph = ""  # reset paragraph
                 else:
-                    paragraph += line
+                    paragraph += line  # append line to paragraph
             
+            # write sentence cores to a file
             for core in sentence_cores:
                 core_file.write(core)
 
