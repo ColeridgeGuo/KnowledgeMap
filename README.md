@@ -2,11 +2,10 @@
 Creating knowledge maps using StanfordCoreNLP
 
 ## text_processing.py
-Process the list of articles to remove unuseful info, leave only abstracts and
-some titles for entity-relation extraction.
+Process the list of articles to remove unuseful info, leave only abstracts for entity-relation extraction.
 
 ## sentence_core_extraction.py
-extract sentence cores as relations for building a knowledge base.
+Extract sentence cores to build relations between entities.
 
 ## stanford_ner_demo.py
 
